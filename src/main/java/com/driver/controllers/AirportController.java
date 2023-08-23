@@ -113,8 +113,6 @@ public class AirportController {
         //This will not include the current person who is trying to book, he might also be jsut checking price
 
         int noOfPeopleBooked = flightToPassengerDb.get(flightId).size();
-        if(noOfPeopleBooked == 0) return 3000;
-        if(noOfPeopleBooked == 1) return 3000;
         return noOfPeopleBooked*50 + 3000;
 
     }
@@ -230,7 +228,11 @@ public class AirportController {
     public int calculateRevenueOfAFlight(@PathVariable("flightId")Integer flightId){
 
         int noOfPeopleBooked = flightToPassengerDb.get(flightId).size();
-        int variableFare = (noOfPeopleBooked*(noOfPeopleBooked+1))*25;
+        int variableFare = 0;
+        if(noOfPeopleBooked > 1){
+            variableFare = (noOfPeopleBooked*(noOfPeopleBooked+1))*25;
+        }
+
         int fixedFare = 3000*noOfPeopleBooked;
         int totalFare = variableFare + fixedFare;
 
