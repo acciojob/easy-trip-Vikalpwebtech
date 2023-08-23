@@ -114,6 +114,7 @@ public class AirportController {
 
         int noOfPeopleBooked = flightToPassengerDb.get(flightId).size();
         if(noOfPeopleBooked == 0) return 3000;
+        if(noOfPeopleBooked == 1) return 3000;
         return noOfPeopleBooked*50 + 3000;
 
     }
