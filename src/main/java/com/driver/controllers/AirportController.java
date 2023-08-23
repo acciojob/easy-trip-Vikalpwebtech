@@ -56,7 +56,7 @@ public class AirportController {
 
         double minduration = 10000000;
         for(Flight flight:flightdb.values()){
-            if (flight.getFromCity() == fromCity && flight.getToCity() == toCity){
+            if ((flight.getFromCity().equals(fromCity)) && (flight.getToCity().equals(toCity))){
                 if(flight.getDuration() < minduration){
                     minduration = flight.getDuration();
                 }
@@ -112,12 +112,30 @@ public class AirportController {
         //Also if the passenger has already booked a flight then also return "FAILURE".
         //else if you are able to book a ticket then return "SUCCESS"
 
-        if (flightToPassengerDb.get(flightId).contains(passengerId) || flightToPassengerDb.get(flightId).size() > flightdb.get(flightId).getMaxCapacity()) return "FAILURE";
+        if(Objects.nonNull(flightToPassengerDb.get(flightId)) && (flightToPassengerDb.get(flightId).size() < flightdb.get(flightId).getMaxCapacity())){
+            List<Integer> passengers = flightToPassengerDb.get(flightId);
+            if(passengers.contains(passengerId)){
+                return "FAILURE";
+            }
+            passengers.add(passengerId);
+            flightToPassengerDb.put(flightId,passengers);
+            return "SUCCESS";
+        }
+        //means no such flight in db
+        else if (Objects.isNull(flightToPassengerDb.get(flightId))){
+            //adding new array list
+            flightToPassengerDb.put(flightId,new ArrayList<>());
+            List<Integer> passengers = flightToPassengerDb.get(flightId);
 
-        List<Integer> passengers = flightToPassengerDb.get(flightId);
-        passengers.add(passengerId);
-        flightToPassengerDb.put(flightId,passengers);
-        return "SUCCESS";
+            if (passengers.contains(passengerId)){
+                return "FAILURE";
+            }
+
+            passengers.add(passengerId);
+            flightToPassengerDb.put(flightId,passengers);
+            return "SUCCESS";
+        }
+        return "FAILURE";
     }
 
     @PutMapping("/cancel-a-ticket")
@@ -128,15 +146,15 @@ public class AirportController {
         // Otherwise return a "SUCCESS" message
         // and also cancel the ticket that passenger had booked earlier on the given flightId
 
-        if (!flightdb.containsKey(flightId)) return "FAILURE";
-        if(!flightToPassengerDb.get(flightId).contains(passengerId)) return "FAILURE";
-
         List<Integer> passengers = flightToPassengerDb.get(flightId);
         if(passengers == null) return "FAILURE";
-        passengers.remove(passengerId);
-        flightToPassengerDb.put(flightId,passengers);
 
-       return "SUCCESS";
+        if(passengers.contains(passengerId)) {
+            passengers.remove(passengerId);
+            return "SUCCESS";
+        }
+
+       return "FAILURE";
     }
 
 
@@ -213,7 +231,7 @@ public class AirportController {
         //And return a "SUCCESS" message if the passenger has been added successfully.
 
         passengerdb.put(passenger.getPassengerId(),passenger);
-       return null;
+       return "SUCCESS";
     }
 
 
