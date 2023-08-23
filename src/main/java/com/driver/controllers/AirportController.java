@@ -99,7 +99,7 @@ public class AirportController {
         //This will not include the current person who is trying to book, he might also be just checking price
 
         int numberofpassengerbooked = flightToPassengerDb.get(flightId).size();
-       return 3000 + numberofpassengerbooked*50;
+       return numberofpassengerbooked*50 + 3000 ;
 
     }
 
